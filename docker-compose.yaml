@@ -1,0 +1,61 @@
+version: '3.7'
+services:
+  cache:
+    depends_on:
+    - x509-refresh
+    image: dodasts/cache:v2
+    entrypoint:
+      - bash
+      - -c
+      - "mkdir -p /data; chown -R 999:998 /data; cd /data; env; chown -R 999:998 /var/log/xrootd; chown -R 999:998 /etc/xrootd/conf; sudo -E -u xrootd /usr/bin/xrootd -l /var/log/xrootd/xrootd.log -c /etc/xrootd/conf/xrootd.cfg -n xrd ; tail -f /var/log/xrootd/xrd/xrootd.log" 
+    privileged: true
+    network_mode: "host"
+    volumes:
+    - type: bind
+      source: ./logs
+      target: /var/log/xrootd
+    - type: bind
+      source: ./config
+      target: /etc/xrootd/conf 
+    - type: bind
+      source: ./proxy
+      target: /etc/x509proxy 
+    #healthcheck:
+    #  test: ["CMD", "/bin/bash", "-c", "voms-proxy-info --exists --valid 6:00 --file /etc/x509proxy/proxy"]
+    #  interval: 30s
+    #  timeout: 10s
+    #  retries: 3
+    #  start_period: 30s
+    env_file:
+    - .env 
+  x509-refresh:
+    image: dodasts/x509-renewer:v1 
+    entrypoint:
+      - bash
+      - -c
+      - "cd /etc/certs && while true; do chown -R 999:998 /etc/x509proxy/proxy; voms-proxy-info --file /etc/x509proxy/proxy --exists --valid 8:00 || voms-proxy-init --voms cms --cert usercert.pem --key usercert.key --debug --out /etc/x509proxy/proxy; chown -R 999:998 /etc/x509proxy/proxy; sleep 600; done"
+    environment:
+    - REPO_LIST=cms.cern.ch  grid.cern.ch cms.dodas.infn.it 
+    privileged: true
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "voms-proxy-info --exists --valid 6:00 --file /etc/x509proxy/proxy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+    - type: bind
+      source: ./certs
+      target: /etc/certs
+    - type: bind
+      source: ./proxy
+      target: /etc/x509proxy 
+ 
+  autoheal:
+    restart: always
+    environment:
+    - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    image: willfarrell/autoheal
+
