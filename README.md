@@ -54,5 +54,5 @@ docker-compose up -d
 ```
 
 and monitor the status via a simple `docker ps` command.
-When everything is in status `healthy` (that can take several minutes), you should be able to find the logs of the WN on `./logs` folder.
+When everything is in status `healthy` (that can take several minutes), you should be able to find the logs of the xrootd daemon on `./logs` folder.
 
