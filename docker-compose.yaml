@@ -4,13 +4,20 @@ services:
     depends_on:
     - x509-refresh
     image: dodasts/cache:v2
+    restart: always
     entrypoint:
       - bash
       - -c
-      - "mkdir -p /data; chown -R 999:998 /data; cd /data; env; chown -R 999:998 /var/log/xrootd; chown -R 999:998 /etc/xrootd/conf; sudo -E -u xrootd /usr/bin/xrootd -l /var/log/xrootd/xrootd.log -c /etc/xrootd/conf/xrootd.cfg -n xrd ; tail -f /var/log/xrootd/xrd/xrootd.log" 
+      - "mkdir -p /metadata; chown -R 999:998 /metadata; mkdir -p /data; chown -R 999:998 /data; cd /data; env; chown -R 999:998 /var/log/xrootd; chown -R 999:998 /etc/xrootd/conf; sudo -E -u xrootd /usr/bin/xrootd -l /var/log/xrootd/xrootd.log -c /etc/xrootd/conf/xrootd.cfg -n xrd ; tail -f /var/log/xrootd/xrd/xrootd.log" 
     privileged: true
     network_mode: "host"
     volumes:
+    - type: bind
+      source: ./metadata
+      target: /metadata
+    - type: bind
+      source: ./data
+      target: /data
     - type: bind
       source: ./logs
       target: /var/log/xrootd
@@ -20,16 +27,17 @@ services:
     - type: bind
       source: ./proxy
       target: /etc/x509proxy 
-    #healthcheck:
-    #  test: ["CMD", "/bin/bash", "-c", "voms-proxy-info --exists --valid 6:00 --file /etc/x509proxy/proxy"]
-    #  interval: 30s
-    #  timeout: 10s
-    #  retries: 3
-    #  start_period: 30s
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "pgrep xrootd"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     env_file:
     - .env 
   x509-refresh:
     image: dodasts/x509-renewer:v1 
+    restart: always
     entrypoint:
       - bash
       - -c
