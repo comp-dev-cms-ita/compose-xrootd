@@ -56,3 +56,6 @@ docker-compose up -d
 and monitor the status via a simple `docker ps` command.
 When everything is in status `healthy` (that can take several minutes), you should be able to find the logs of the xrootd daemon on `./logs` folder.
 
+## Configure WNs to select the cache instance by default
+
+Please follow the [WN deployment instructions](https://github.com/comp-dev-cms-ita/compose-htc-wn/blob/master/README.md#set-the-automatic-cache-selection-for-the-xrootd-client) 
