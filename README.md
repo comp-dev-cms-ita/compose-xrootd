@@ -29,6 +29,9 @@ What will be installed:
     echo "MYUSER CERTIFICATE KEY" > ./certs/usercert.key
     chmod 600 ./certs/usercert.key
     ```
+- a valid telegraf token to be able to push metrics to the central InfluxDB
+  - please contact diego.ciangottini<at>pg.infn.it to obtain one
+  - then insert it in `telegraf-config/telegraf.conf` where you find `token = "CHANGEME" `
 
 ## Preparation
 
