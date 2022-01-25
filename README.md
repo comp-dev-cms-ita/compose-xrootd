@@ -32,6 +32,7 @@ What will be installed:
 - a valid telegraf token to be able to push metrics to the central InfluxDB
   - please contact diego.ciangottini<at>pg.infn.it to obtain one
   - then insert it in `telegraf-config/telegraf.conf` where you find `token = "CHANGEME" `
+- put your site name in place if the tag `SITENAME HERE` in the `telegraf-config/telegraf.conf` file
 
 ## Preparation
 
