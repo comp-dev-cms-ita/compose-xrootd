@@ -64,6 +64,7 @@ services:
   telegraf:
     image: telegraf
     restart: always
+    network_mode: "host"
     volumes:
     - type: bind
       source: ./telegraf-config/telegraf.conf
@@ -71,7 +72,18 @@ services:
     - type: bind
       source: /var/run/docker.sock
       target: /var/run/docker.sock
+    - type: bind
+      source: ./metadata
+      target: /metadata
+    - type: bind
+      source: ./data
+      target: /data
+    - type: bind
+      source: /proc
+      target:  /host/proc
     user: "telegraf:${GID}"
+    env_file:
+      - .env
 
   autoheal:
     restart: always

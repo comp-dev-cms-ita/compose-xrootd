@@ -33,6 +33,7 @@ What will be installed:
   - please contact diego.ciangottini<at>pg.infn.it to obtain one
   - then insert it in `telegraf-config/telegraf.conf` where you find `token = "CHANGEME" `
 - put your site name in place if the tag `SITENAME HERE` in the `telegraf-config/telegraf.conf` file
+- allow telegraf to monitor the docker metrics with the following command: `echo "GID=$(stat -c '%g' /var/run/docker.sock)" >> .env`
 
 ## Preparation
 
